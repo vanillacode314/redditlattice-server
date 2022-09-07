@@ -2,10 +2,11 @@
   "name": "redditlattice-server",
   "version": "1.0.0",
   "description": "Converts reddit images to efficient format on the fly for redditlattice",
-  "main": "src/index.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "ts-node-esm src/index.ts",
+    "build": "tsc",
+    "start": "node index.js",
     "dev": "nodemon --exec pnpm ts-node-esm src/index.ts"
   },
   "keywords": [

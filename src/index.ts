@@ -36,7 +36,7 @@ app.route({
   },
   handler: async (request, reply) => {
     const { format, width, url } = request.query as {
-      width: number;
+      width: string;
       format: string;
       url: string;
     };
@@ -44,7 +44,7 @@ app.route({
     if (res.body) {
       return getStreamingImage(
         res.body,
-        width,
+        parseInt(width),
         format as keyof FormatEnum | AvailableFormatInfo
       );
     }

@@ -27,7 +27,7 @@ app.route({
         const { format, width, url } = request.query;
         const res = await fetch(url);
         if (res.body) {
-            return getStreamingImage(res.body, width, format);
+            return getStreamingImage(res.body, parseInt(width), format);
         }
     },
 });

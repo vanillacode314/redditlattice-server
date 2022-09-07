@@ -1,0 +1,32 @@
+{
+  "name": "redditlattice-server",
+  "version": "1.0.0",
+  "description": "Converts reddit images to efficient format on the fly for redditlattice",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "ts-node-esm src/index.ts",
+    "dev": "nodemon --exec pnpm ts-node-esm src/index.ts"
+  },
+  "keywords": [
+    "redditlattice",
+    "reddit",
+    "images"
+  ],
+  "author": "Raqueebuddin Aziz",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "fastify": "^4.5.3",
+    "node-fetch": "^3.2.10",
+    "sharp": "^0.31.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.15",
+    "@types/sharp": "^0.30.5",
+    "nodemon": "^2.0.19",
+    "prettier": "^2.7.1",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.8.2"
+  }
+}

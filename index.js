@@ -5,12 +5,12 @@ const PORT = process.env.PORT || 3000;
 async function getStreamingImage(stream, width = 300, format = "webp") {
   if (width > 0) {
     const transformer = sharp()
-      .resize({ width, fastShrinkOnLoad: false, withoutEnlargement: true })
       .toFormat(format === "gif" ? "gif" : format, {
         quality: 100,
         mozjpeg: true,
         lossless: true,
-      });
+      })
+      .resize({ width, fastShrinkOnLoad: false, withoutEnlargement: true });
     return stream.pipe(transformer);
   }
   const transformer = sharp().toFormat(format === "gif" ? "gif" : format, {

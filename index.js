@@ -25,8 +25,11 @@ app.route({
     },
     handler: async (request, reply) => {
         const { format, width, url } = request.query;
+        const isGif = new URL(url).pathname.endsWith(".gif");
         const res = await fetch(url);
         if (res.body) {
+            if (isGif)
+                return res.body;
             return getStreamingImage(res.body, parseInt(width), format);
         }
     },

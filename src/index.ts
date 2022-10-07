@@ -66,6 +66,7 @@ app.route({
       url: string;
     };
 
+    reply.type(`image/${format}`);
     const key = genKey(url, parseInt(width), format as ImageFormat);
     if (CACHE.data.has(key)) {
       request.log.info("Returned data from cache");
@@ -91,7 +92,6 @@ app.route({
         format as ImageFormat
       );
       cacheStream(key, transformer);
-      reply.header("Content-Type", `image/${format}`);
       return res.body.pipe(transformer);
     }
   },

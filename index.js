@@ -49,6 +49,7 @@ app.route({
     },
     handler: async (request, reply) => {
         const { format, width, url } = request.query;
+        reply.type(`image/${format}`);
         const key = genKey(url, parseInt(width), format);
         if (CACHE.data.has(key)) {
             request.log.info("Returned data from cache");
@@ -70,7 +71,6 @@ app.route({
                 return res.body;
             const transformer = getTransformer(parseInt(width), format);
             cacheStream(key, transformer);
-            reply.header("Content-Type", `image/${format}`);
             return res.body.pipe(transformer);
         }
     },

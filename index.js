@@ -40,6 +40,7 @@ function getTransformer(width = 300, format = "webp") {
 const app = fastify({ logger: true });
 await app.register(cors, {
     origin: "https://redditlattice.netlify.app",
+    credentials: true,
     methods: ["GET"],
 });
 app.route({

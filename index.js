@@ -51,8 +51,10 @@ app.route({
         const { format, width, url } = request.query;
         const key = genKey(url, parseInt(width), format);
         if (CACHE.data.has(key)) {
+            request.log.info("Returned data from cache");
             return CACHE.data.get(key);
         }
+        request.log.info("Fetching data from server");
         const isGif = new URL(url).pathname.endsWith(".gif");
         const res = await fetch(url);
         if (res.body) {

@@ -16,7 +16,7 @@ function cacheStream(key, transformer) {
         .clone()
         .toBuffer()
         .then((buffer) => {
-        if (CACHE.size + buffer.byteLength > CACHE_LIMIT) {
+        while (CACHE.size + buffer.byteLength > CACHE_LIMIT) {
             const key = CACHE.keys.shift();
             if (key)
                 CACHE.data.delete(key);
@@ -56,7 +56,15 @@ app.route({
         }
         request.log.info("Fetching data from server");
         const isGif = new URL(url).pathname.endsWith(".gif");
-        const res = await fetch(url);
+        const res = await fetch(url, {
+            headers: {
+                "User-Agent": "User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36",
+            },
+        });
+        if (!res.ok) {
+            reply.status(res.status);
+            return;
+        }
         if (res.body) {
             if (isGif)
                 return res.body;

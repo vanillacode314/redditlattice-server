@@ -2,15 +2,39 @@ import fastify from "fastify";
 import sharp from "sharp";
 import fetch from "node-fetch";
 const PORT = (process.env.PORT || 3000);
-async function getStreamingImage(stream, width = 300, format = "webp") {
+const CACHE_LIMIT = 256 * 1024 * 1024; // in bytes
+const CACHE = {
+    size: 0,
+    data: new Map(),
+    keys: [],
+};
+function genKey(url, width, format) {
+    return `${url}-${width}-${format}`;
+}
+function cacheStream(key, transformer) {
+    transformer
+        .clone()
+        .toBuffer()
+        .then((buffer) => {
+        if (CACHE.size + buffer.byteLength > CACHE_LIMIT) {
+            const key = CACHE.keys.shift();
+            if (key)
+                CACHE.data.delete(key);
+        }
+        CACHE.size += buffer.byteLength;
+        CACHE.data.set(key, buffer);
+        CACHE.keys.push(key);
+    });
+}
+function getTransformer(width = 300, format = "webp") {
+    let transformer;
     if (width > 0) {
-        const transformer = sharp()
+        transformer = sharp()
             .toFormat(format === "gif" ? "gif" : format)
             .resize({ width });
-        return stream.pipe(transformer);
     }
-    const transformer = sharp().toFormat(format === "gif" ? "gif" : format);
-    return stream.pipe(transformer);
+    transformer = sharp().toFormat(format === "gif" ? "gif" : format);
+    return transformer;
 }
 const app = fastify({ logger: true });
 app.route({
@@ -25,12 +49,19 @@ app.route({
     },
     handler: async (request, reply) => {
         const { format, width, url } = request.query;
+        const key = genKey(url, parseInt(width), format);
+        if (CACHE.data.has(key)) {
+            return CACHE.data.get(key);
+        }
         const isGif = new URL(url).pathname.endsWith(".gif");
         const res = await fetch(url);
         if (res.body) {
             if (isGif)
                 return res.body;
-            return getStreamingImage(res.body, parseInt(width), format);
+            const transformer = getTransformer(parseInt(width), format);
+            cacheStream(key, transformer);
+            reply.header("Content-Type", `image/${format}`);
+            return res.body.pipe(transformer);
         }
     },
 });

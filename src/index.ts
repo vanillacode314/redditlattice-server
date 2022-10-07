@@ -1,25 +1,51 @@
 import fastify from "fastify";
-import sharp, { AvailableFormatInfo, FormatEnum } from "sharp";
+import sharp, { AvailableFormatInfo, FormatEnum, Sharp } from "sharp";
 import fetch from "node-fetch";
-import { Stream } from "stream";
+import { Readable, Transform, Writable } from "stream";
 
+type ImageFormat = keyof FormatEnum | AvailableFormatInfo;
 const PORT = (process.env.PORT || 3000) as number;
+const CACHE_LIMIT: number = 256 * 1024 * 1024; // in bytes
+const CACHE: {
+  size: number;
+  data: Map<string, Buffer>;
+  keys: string[];
+} = {
+  size: 0,
+  data: new Map(),
+  keys: [],
+};
 
-async function getStreamingImage(
-  stream: Stream,
-  width: number = 300,
-  format: keyof FormatEnum | AvailableFormatInfo = "webp"
-) {
+function genKey(url: string, width: number, format: ImageFormat) {
+  return `${url}-${width}-${format}`;
+}
+
+function cacheStream(key: string, transformer: Sharp) {
+  transformer
+    .clone()
+    .toBuffer()
+    .then((buffer) => {
+      if (CACHE.size + buffer.byteLength > CACHE_LIMIT) {
+        const key = CACHE.keys.shift();
+        if (key) CACHE.data.delete(key);
+      }
+      CACHE.size += buffer.byteLength;
+      CACHE.data.set(key, buffer);
+      CACHE.keys.push(key);
+    });
+}
+function getTransformer(width: number = 300, format: ImageFormat = "webp") {
+  let transformer;
+
   if (width > 0) {
-    const transformer = sharp()
+    transformer = sharp()
       .toFormat(format === "gif" ? "gif" : format)
       .resize({ width });
-
-    return stream.pipe(transformer);
   }
-  const transformer = sharp().toFormat(format === "gif" ? "gif" : format);
 
-  return stream.pipe(transformer);
+  transformer = sharp().toFormat(format === "gif" ? "gif" : format);
+
+  return transformer;
 }
 
 const app = fastify({ logger: true });
@@ -41,15 +67,22 @@ app.route({
       url: string;
     };
 
+    const key = genKey(url, parseInt(width), format as ImageFormat);
+    if (CACHE.data.has(key)) {
+      return CACHE.data.get(key);
+    }
+
     const isGif = new URL(url).pathname.endsWith(".gif");
     const res = await fetch(url);
     if (res.body) {
       if (isGif) return res.body;
-      return getStreamingImage(
-        res.body,
+      const transformer = getTransformer(
         parseInt(width),
-        format as keyof FormatEnum | AvailableFormatInfo
+        format as ImageFormat
       );
+      cacheStream(key, transformer);
+      reply.header("Content-Type", `image/${format}`);
+      return res.body.pipe(transformer);
     }
   },
 });

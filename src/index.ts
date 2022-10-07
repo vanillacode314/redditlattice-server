@@ -1,4 +1,5 @@
 import fastify from "fastify";
+import cors from "@fastify/cors";
 import sharp, { AvailableFormatInfo, FormatEnum, Sharp } from "sharp";
 import fetch from "node-fetch";
 
@@ -48,6 +49,10 @@ function getTransformer(width: number = 300, format: ImageFormat = "webp") {
 }
 
 const app = fastify({ logger: true });
+await app.register(cors, {
+  origin: "https://redditlattice.netlify.app",
+  methods: ["GET"],
+});
 
 app.route({
   method: "GET",

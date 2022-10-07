@@ -1,4 +1,5 @@
 import fastify from "fastify";
+import cors from "@fastify/cors";
 import sharp from "sharp";
 import fetch from "node-fetch";
 const PORT = (process.env.PORT || 3000);
@@ -37,6 +38,10 @@ function getTransformer(width = 300, format = "webp") {
     return transformer;
 }
 const app = fastify({ logger: true });
+await app.register(cors, {
+    origin: "https://redditlattice.netlify.app",
+    methods: ["GET"],
+});
 app.route({
     method: "GET",
     url: "/",

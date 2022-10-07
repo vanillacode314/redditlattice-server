@@ -17,6 +17,7 @@
   "author": "Raqueebuddin Aziz",
   "license": "GPL-3.0",
   "dependencies": {
+    "@fastify/cors": "^8.1.0",
     "@fastify/rate-limit": "^7.4.0",
     "fastify": "^4.7.0",
     "node-fetch": "^3.2.10",

@@ -75,6 +75,8 @@ app.route({
     reply.type(`image/${format}`);
     const key = genKey(url, parseInt(width), format as ImageFormat);
     if (CACHE.data.has(key)) {
+      CACHE.keys.filter((k) => k !== key);
+      CACHE.keys.push(key);
       request.log.info("Returned data from cache");
       return CACHE.data.get(key);
     }

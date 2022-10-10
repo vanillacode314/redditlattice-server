@@ -25,7 +25,11 @@ function getTransformer(
 
 const app = fastify({ logger: true });
 await app.register(cors, {
-  origin: "https://redditlattice.netlify.app",
+  origin: [
+    "https://redditlattice.netlify.app",
+    "https://dev--redditlattice.netlify.app",
+    "https://nuxt--redditlattice.netlify.app",
+  ],
   credentials: true,
   methods: ["GET"],
 });

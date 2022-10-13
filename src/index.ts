@@ -4,13 +4,17 @@ import sharp, { AvailableFormatInfo, FormatEnum, Sharp } from "sharp";
 import got from "got";
 import PQueue from "p-queue";
 import Keyv from "keyv";
+import { createFetch } from "got-fetch";
 
 const keyv = new Keyv();
 keyv.setMaxListeners(10000);
 
 const client = got.extend({
   cache: keyv,
+  timeout: { request: 10000 },
 });
+
+const fetch = createFetch(client);
 
 const queueSize = 5;
 const queue = new PQueue({ concurrency: queueSize });
@@ -65,15 +69,19 @@ app.route({
     };
     reply.type(`image/${format}`);
     const isGif = new URL(url).pathname.endsWith(".gif");
-    const res = client.stream(url, {
+    const res = await fetch(url, {
       headers: {
         "User-Agent":
           "User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36",
       },
     });
+    if (!res.ok) {
+      reply.status(res.status);
+      return res.statusText;
+    }
     if (isGif) return res;
     const transformer = getTransformer(parseInt(width), format);
-    return res.pipe(transformer);
+    return res.body.pipe(transformer);
   },
 });
 

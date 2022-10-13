@@ -6,6 +6,7 @@ specifiers:
   '@types/sharp': ^0.30.5
   fastify: ^4.8.1
   got: ^12.5.2
+  got-fetch: ^5.1.2
   keyv: ^4.5.0
   nodemon: ^2.0.20
   p-queue: ^7.3.0
@@ -19,6 +20,7 @@ dependencies:
   '@fastify/cors': 8.1.0
   fastify: 4.8.1
   got: 12.5.2
+  got-fetch: 5.1.2_got@12.5.2
   keyv: 4.5.0
   p-queue: 7.3.0
   sharp: 0.31.1
@@ -522,6 +524,15 @@ packages:
     dependencies:
       is-glob: 4.0.3
     dev: true
+
+  /got-fetch/5.1.2_got@12.5.2:
+    resolution: {integrity: sha512-MDVHrQlFMERVzMzzrn+0KV9ffPaakEt4IS/vPSmyH3k5vPJntXbNGEYQL4C9B6TRv0jeGADpYvgyTjTV+u+EwA==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      got: ^12.0.0
+    dependencies:
+      got: 12.5.2
+    dev: false
 
   /got/12.5.2:
     resolution: {integrity: sha512-guHGMSEcsA5m1oPRweXUJnug0vuvlkX9wx5hzOka+ZBrBUOJHU0Z1JcNu3QE5IPGnA5aXUsQHdWOD4eJg9/v3A==}

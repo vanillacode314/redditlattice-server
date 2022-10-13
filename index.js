@@ -1,14 +1,8 @@
 import fastify from "fastify";
 import cors from "@fastify/cors";
 import sharp from "sharp";
-import got from "got";
 import PQueue from "p-queue";
-import { createFetch } from "got-fetch";
-const client = got.extend({
-    cache: false,
-    timeout: { request: 10000 },
-});
-const fetch = createFetch(client);
+import { request as client } from "undici";
 const queueSize = 5;
 const queue = new PQueue({ concurrency: queueSize });
 const PORT = (process.env.PORT || 3000);
@@ -50,19 +44,19 @@ app.route({
         const { format, width, url } = request.query;
         reply.type(`image/${format}`);
         const isGif = new URL(url).pathname.endsWith(".gif");
-        const res = await fetch(url, {
+        const { statusCode, body } = await client(url, {
             headers: {
                 "User-Agent": "User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36",
             },
         });
-        if (!res.ok) {
-            reply.status(res.status);
-            return res.statusText;
+        if (statusCode !== 200) {
+            reply.status(statusCode);
+            return statusCode;
         }
         if (isGif)
-            return res;
+            return body;
         const transformer = getTransformer(parseInt(width), format);
-        return res.body.pipe(transformer);
+        return body.pipe(transformer);
     },
 });
 try {

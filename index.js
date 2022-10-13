@@ -40,10 +40,12 @@ app.route({
             url: { type: "string" },
         },
     },
+    onRequest: async (request, reply) => {
+        await queue.onEmpty();
+    },
     handler: async (request, reply) => {
-        await queue.onSizeLessThan(queueSize);
         queue.add(async () => {
-            return await reply;
+            await reply;
         });
         const { format, width, url } = request.query;
         reply.type(`image/${format}`);

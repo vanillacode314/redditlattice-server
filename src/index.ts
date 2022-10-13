@@ -58,7 +58,7 @@ app.route({
     reply.type(`image/${format}`);
     const isGif = new URL(url).pathname.endsWith(".gif");
     if (isGif) {
-      reply.redirect(url);
+      reply.redirect(301, url);
       return;
     }
     const { statusCode, body } = await client(url, {

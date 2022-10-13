@@ -3,12 +3,9 @@ import cors from "@fastify/cors";
 import sharp from "sharp";
 import got from "got";
 import PQueue from "p-queue";
-import Keyv from "keyv";
 import { createFetch } from "got-fetch";
-const keyv = new Keyv();
-keyv.setMaxListeners(10000);
 const client = got.extend({
-    cache: keyv,
+    cache: false,
     timeout: { request: 10000 },
 });
 const fetch = createFetch(client);

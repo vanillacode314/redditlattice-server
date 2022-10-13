@@ -7,7 +7,6 @@ specifiers:
   fastify: ^4.8.1
   got: ^12.5.2
   got-fetch: ^5.1.2
-  keyv: ^4.5.0
   nodemon: ^2.0.20
   p-queue: ^7.3.0
   prettier: ^2.7.1
@@ -21,7 +20,6 @@ dependencies:
   fastify: 4.8.1
   got: 12.5.2
   got-fetch: 5.1.2_got@12.5.2
-  keyv: 4.5.0
   p-queue: 7.3.0
   sharp: 0.31.1
 

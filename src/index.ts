@@ -4,7 +4,7 @@ import sharp, { AvailableFormatInfo, FormatEnum, Sharp } from "sharp";
 import fetch from "node-fetch";
 import PQueue from "p-queue";
 
-const queueSize = 10;
+const queueSize = 5;
 const queue = new PQueue({ concurrency: queueSize });
 
 type ImageFormat = keyof FormatEnum | AvailableFormatInfo;

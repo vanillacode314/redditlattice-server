@@ -1,8 +1,16 @@
 import fastify from "fastify";
 import cors from "@fastify/cors";
 import sharp, { AvailableFormatInfo, FormatEnum, Sharp } from "sharp";
-import got from "got-fetch";
+import got from "got";
 import PQueue from "p-queue";
+import Keyv from "keyv";
+
+const keyv = new Keyv();
+keyv.setMaxListeners(10000);
+
+const client = got.extend({
+  cache: keyv,
+});
 
 const queueSize = 5;
 const queue = new PQueue({ concurrency: queueSize });
@@ -14,16 +22,10 @@ function getTransformer(
   width: number = 300,
   format: ImageFormat = "webp"
 ): Sharp {
-  let transformer;
-
+  let transformer = sharp({ failOn: "none" }).toFormat(format);
   if (width > 0) {
-    transformer = sharp()
-      .toFormat(format === "gif" ? "gif" : format)
-      .resize({ width });
+    transformer = transformer.resize({ width });
   }
-
-  transformer = sharp().toFormat(format === "gif" ? "gif" : format);
-
   return transformer;
 }
 
@@ -56,30 +58,20 @@ app.route({
     });
     const { format, width, url } = request.query as {
       width: string;
-      format: string;
+      format: ImageFormat;
       url: string;
     };
     reply.type(`image/${format}`);
     const isGif = new URL(url).pathname.endsWith(".gif");
-    const res = await got(url, {
+    const res = client.stream(url, {
       headers: {
         "User-Agent":
           "User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36",
       },
     });
-    if (!res.ok) {
-      reply.status(res.status);
-      return;
-    }
-    if (res.body) {
-      if (isGif) return res.body;
-      const transformer = getTransformer(
-        parseInt(width),
-        format as ImageFormat
-      );
-      const stream = res.body.pipe(transformer);
-      return stream;
-    }
+    if (isGif) return res;
+    const transformer = getTransformer(parseInt(width), format);
+    return res.pipe(transformer);
   },
 });
 

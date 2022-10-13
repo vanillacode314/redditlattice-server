@@ -8,6 +8,7 @@ specifiers:
   fastify: ^4.7.0
   node-fetch: ^3.2.10
   nodemon: ^2.0.20
+  p-queue: ^7.3.0
   prettier: ^2.7.1
   sharp: ^0.31.1
   ts-node: ^10.9.1
@@ -19,6 +20,7 @@ dependencies:
   '@fastify/rate-limit': 7.4.0
   fastify: 4.7.0
   node-fetch: 3.2.10
+  p-queue: 7.3.0
   sharp: 0.31.1
   ts-node: 10.9.1_p2zphemn5bk5inasc666rmprwi
   typescript: 4.8.4
@@ -361,6 +363,10 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
+  /eventemitter3/4.0.7:
+    resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
+    dev: false
+
   /events/3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
     engines: {node: '>=0.8.x'}
@@ -675,6 +681,19 @@ packages:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
     dependencies:
       wrappy: 1.0.2
+    dev: false
+
+  /p-queue/7.3.0:
+    resolution: {integrity: sha512-5fP+yVQ0qp0rEfZoDTlP2c3RYBgxvRsw30qO+VtPPc95lyvSG+x6USSh1TuLB4n96IO6I8/oXQGsTgtna4q2nQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      eventemitter3: 4.0.7
+      p-timeout: 5.1.0
+    dev: false
+
+  /p-timeout/5.1.0:
+    resolution: {integrity: sha512-auFDyzzzGZZZdHz3BtET9VEz0SE/uMEAx7uWfGPucfzEwwe/xH0iVeZibQmANYE/hp9T2+UUZT5m+BKyrDp3Ew==}
+    engines: {node: '>=12'}
     dev: false
 
   /picomatch/2.3.1:

@@ -2,6 +2,9 @@ import fastify from "fastify";
 import cors from "@fastify/cors";
 import sharp from "sharp";
 import fetch from "node-fetch";
+import PQueue from "p-queue";
+const queueSize = 5;
+const queue = new PQueue({ concurrency: queueSize });
 const PORT = (process.env.PORT || 3000);
 function getTransformer(width = 300, format = "webp") {
     let transformer;
@@ -15,7 +18,12 @@ function getTransformer(width = 300, format = "webp") {
 }
 const app = fastify({ logger: true });
 await app.register(cors, {
-    origin: "https://redditlattice.netlify.app",
+    origin: [
+        "https://redditlattice.netlify.app",
+        "https://dev--redditlattice.netlify.app",
+        "https://nuxt--redditlattice.netlify.app",
+        "https://solidjs--redditlattice.netlify.app",
+    ],
     credentials: true,
     methods: ["GET"],
 });
@@ -30,6 +38,11 @@ app.route({
         },
     },
     handler: async (request, reply) => {
+        await queue.onSizeLessThan(queueSize);
+        queue.add(async () => {
+            return await reply;
+        });
+        console.log("HANDLER");
         const { format, width, url } = request.query;
         reply.type(`image/${format}`);
         const isGif = new URL(url).pathname.endsWith(".gif");
@@ -46,7 +59,8 @@ app.route({
             if (isGif)
                 return res.body;
             const transformer = getTransformer(parseInt(width), format);
-            return res.body.pipe(transformer);
+            const stream = res.body.pipe(transformer);
+            return stream;
         }
     },
 });

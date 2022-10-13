@@ -2,6 +2,10 @@ import fastify from "fastify";
 import cors from "@fastify/cors";
 import sharp, { AvailableFormatInfo, FormatEnum, Sharp } from "sharp";
 import fetch from "node-fetch";
+import PQueue from "p-queue";
+
+const queueSize = 5;
+const queue = new PQueue({ concurrency: queueSize });
 
 type ImageFormat = keyof FormatEnum | AvailableFormatInfo;
 const PORT = (process.env.PORT || 3000) as number;
@@ -46,6 +50,11 @@ app.route({
     },
   },
   handler: async (request, reply) => {
+    await queue.onSizeLessThan(queueSize);
+    queue.add(async () => {
+      return await reply;
+    });
+    console.log("HANDLER");
     const { format, width, url } = request.query as {
       width: string;
       format: string;
@@ -70,7 +79,8 @@ app.route({
         parseInt(width),
         format as ImageFormat
       );
-      return res.body.pipe(transformer);
+      const stream = res.body.pipe(transformer);
+      return stream;
     }
   },
 });

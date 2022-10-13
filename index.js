@@ -1,7 +1,7 @@
 import fastify from "fastify";
 import cors from "@fastify/cors";
 import sharp from "sharp";
-import fetch from "node-fetch";
+import got from "got-fetch";
 import PQueue from "p-queue";
 const queueSize = 5;
 const queue = new PQueue({ concurrency: queueSize });
@@ -45,7 +45,7 @@ app.route({
         const { format, width, url } = request.query;
         reply.type(`image/${format}`);
         const isGif = new URL(url).pathname.endsWith(".gif");
-        const res = await fetch(url, {
+        const res = await got(url, {
             headers: {
                 "User-Agent": "User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36",
             },

@@ -57,10 +57,6 @@ app.route({
     };
     reply.type(`image/${format}`);
     const isGif = new URL(url).pathname.endsWith(".gif");
-    if (isGif) {
-      reply.redirect(url);
-      return;
-    }
     const { statusCode, body } = await client(url, {
       headers: {
         "User-Agent":
@@ -71,6 +67,7 @@ app.route({
       reply.status(statusCode);
       return statusCode;
     }
+    if (isGif) return body;
     const transformer = getTransformer(parseInt(width), format);
     return body.pipe(transformer);
   },

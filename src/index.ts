@@ -63,9 +63,9 @@ app.route({
           "User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36",
       },
     });
-    if (statusCode !== 200) {
+    if (statusCode >= 400) {
       reply.status(statusCode);
-      return statusCode;
+      return `${statusCode}`;
     }
     if (isGif) return body;
     const transformer = getTransformer(parseInt(width), format);

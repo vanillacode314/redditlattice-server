@@ -20,6 +20,7 @@ await app.register(cors, {
         "https://dev--redditlattice.netlify.app",
         "https://nuxt--redditlattice.netlify.app",
         "https://solidjs--redditlattice.netlify.app",
+        "https://monorepo--redditlattice.netlify.app",
     ],
     credentials: true,
     methods: ["GET"],

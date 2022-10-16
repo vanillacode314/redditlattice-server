@@ -4,7 +4,7 @@ import sharp, { AvailableFormatInfo, FormatEnum, Sharp } from "sharp";
 import PQueue from "p-queue";
 import { request as client } from "undici";
 
-const queueSize = 5;
+const queueSize = 3;
 const queue = new PQueue({ concurrency: queueSize });
 
 type ImageFormat = keyof FormatEnum | AvailableFormatInfo;
@@ -14,9 +14,12 @@ function getTransformer(
   width: number = 300,
   format: ImageFormat = "webp"
 ): Sharp {
-  let transformer = sharp({ failOn: "none" }).toFormat(format);
+  let transformer = sharp({ failOn: "none" }).toFormat(format, {
+    lossless: true,
+    quality: 90,
+  });
   if (width > 0) {
-    transformer = transformer.resize({ width });
+    transformer = transformer.resize({ width, withoutEnlargement: true });
   }
   return transformer;
 }

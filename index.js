@@ -3,7 +3,7 @@ import cors from "@fastify/cors";
 import sharp from "sharp";
 import PQueue from "p-queue";
 import { request as client } from "undici";
-const queueSize = 1;
+const queueSize = 10;
 const queue = new PQueue({ concurrency: queueSize });
 const PORT = +(process.env.PORT || 3000);
 function getTransformer(width = 300, format = "webp") {

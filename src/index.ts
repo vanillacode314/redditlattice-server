@@ -4,7 +4,7 @@ import sharp, { AvailableFormatInfo, FormatEnum, Sharp } from "sharp";
 import PQueue from "p-queue";
 import { request as client } from "undici";
 
-const queueSize = 1;
+const queueSize = 10;
 const queue = new PQueue({ concurrency: queueSize });
 
 type ImageFormat = keyof FormatEnum | AvailableFormatInfo;

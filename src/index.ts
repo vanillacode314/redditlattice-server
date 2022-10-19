@@ -4,7 +4,7 @@ import sharp, { AvailableFormatInfo, FormatEnum, Sharp } from "sharp";
 import PQueue from "p-queue";
 import { request as client } from "undici";
 
-const queueSize = 10;
+const queueSize = 5;
 const queue = new PQueue({ concurrency: queueSize });
 
 type ImageFormat = keyof FormatEnum | AvailableFormatInfo;
@@ -25,18 +25,6 @@ function getTransformer(
 }
 
 const app = fastify({ logger: true });
-await app.register(cors, {
-  origin: [
-    "https://redditlattice.netlify.app",
-    "https://dev--redditlattice.netlify.app",
-    "https://nuxt--redditlattice.netlify.app",
-    "https://solidjs--redditlattice.netlify.app",
-    "https://monorepo--redditlattice.netlify.app",
-  ],
-  credentials: true,
-  methods: ["GET"],
-});
-
 app.route({
   method: "GET",
   url: "/",
@@ -78,9 +66,23 @@ app.route({
   },
 });
 
-try {
-  await app.listen({ host: "0.0.0.0", port: PORT });
-} catch (err) {
-  app.log.error(err);
-  process.exit(1);
-}
+(async () => {
+  try {
+    await app.register(cors, {
+      origin: [
+        "https://redditlattice.netlify.app",
+        "https://dev--redditlattice.netlify.app",
+        "https://nuxt--redditlattice.netlify.app",
+        "https://solidjs--redditlattice.netlify.app",
+        "https://monorepo--redditlattice.netlify.app",
+      ],
+      credentials: true,
+      methods: ["GET"],
+    });
+
+    await app.listen({ host: "0.0.0.0", port: PORT });
+  } catch (err) {
+    app.log.error(err);
+    process.exit(1);
+  }
+})();

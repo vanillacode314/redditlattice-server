@@ -39,9 +39,15 @@ app.route({
     await queue.onEmpty();
   },
   handler: async (request, reply) => {
-    queue.add(async () => {
-      await reply;
-    });
+    queue.add(
+      () =>
+        new Promise<void>((resolve) => {
+          reply.then(
+            () => resolve(),
+            () => resolve()
+          );
+        })
+    );
     const { format, width, url } = request.query as {
       width: string;
       format: ImageFormat;

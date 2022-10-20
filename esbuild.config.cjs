@@ -1,10 +1,9 @@
-const esbuild = require("esbuild");
+const esbuild = require('esbuild')
 
 esbuild.build({
-  entryPoints: ["src/index.ts"],
-  outfile: "./index.cjs",
-  minify: true,
+  entryPoints: ['src/index.ts'],
+  outfile: './index.cjs',
   bundle: true,
-  platform: "node",
-  external: ["sharp"],
-});
+  platform: 'node',
+  external: ['sharp'],
+})

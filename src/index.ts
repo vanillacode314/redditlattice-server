@@ -6,6 +6,9 @@ import { request as client } from 'undici'
 
 const queue = new PQueue({ concurrency: 2 })
 
+sharp.cache(false)
+sharp.concurrency(1)
+
 type ImageFormat = keyof FormatEnum | AvailableFormatInfo
 const PORT = +(process.env.PORT || 3000)
 
@@ -13,7 +16,7 @@ function getTransformer(
   width: number = 300,
   format: ImageFormat = 'webp'
 ): Sharp {
-  let transformer = sharp({ failOn: 'none' }).toFormat(format, {
+  let transformer = sharp({ sequentialRead: true }).toFormat(format, {
     lossless: true,
     quality: 90,
   })

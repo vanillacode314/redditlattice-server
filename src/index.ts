@@ -2,9 +2,12 @@ import fastify from 'fastify'
 import cors from '@fastify/cors'
 import sharp, { AvailableFormatInfo, FormatEnum, Sharp } from 'sharp'
 import { request as client } from 'undici'
+import PQueue from 'p-queue'
+
+const queue = new PQueue({ concurrency: 2 })
 
 sharp.cache(false)
-sharp.concurrency(8)
+sharp.concurrency(4)
 
 type ImageFormat = keyof FormatEnum | AvailableFormatInfo
 const PORT = +(process.env.PORT || 3000)
@@ -34,6 +37,10 @@ app.route({
     },
   },
   handler: async (request, reply) => {
+    await queue.onEmpty()
+    queue.add(async () => {
+      await reply
+    })
     const { format, width, url } = request.query as {
       width: string
       format: ImageFormat

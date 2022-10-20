@@ -4,7 +4,7 @@ import sharp, { AvailableFormatInfo, FormatEnum, Sharp } from 'sharp'
 import PQueue from 'p-queue'
 import { request as client } from 'undici'
 
-const queue = new PQueue({ concurrency: 2 })
+const queue = new PQueue({ concurrency: 5 })
 
 sharp.cache(false)
 sharp.concurrency(1)
@@ -18,7 +18,7 @@ function getTransformer(
 ): Sharp {
   let transformer = sharp({ sequentialRead: true }).toFormat(format, {
     lossless: true,
-    quality: 90,
+    quality: 85,
   })
   if (width > 0) {
     transformer = transformer.resize({ width, withoutEnlargement: true })

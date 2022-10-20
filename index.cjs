@@ -52637,14 +52637,14 @@ _PQueue_carryoverConcurrencyCount = /* @__PURE__ */ new WeakMap(), _PQueue_isInt
 
 // src/index.ts
 var import_undici = __toESM(require_undici(), 1);
-var queue = new PQueue({ concurrency: 2 });
+var queue = new PQueue({ concurrency: 5 });
 import_sharp.default.cache(false);
 import_sharp.default.concurrency(1);
 var PORT = +(process.env.PORT || 3e3);
 function getTransformer(width = 300, format = "webp") {
   let transformer = (0, import_sharp.default)({ sequentialRead: true }).toFormat(format, {
     lossless: true,
-    quality: 90
+    quality: 85
   });
   if (width > 0) {
     transformer = transformer.resize({ width, withoutEnlargement: true });

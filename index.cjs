@@ -52658,7 +52658,8 @@ app.route({
     querystring: {
       width: { type: "number" },
       format: { type: "string" },
-      url: { type: "string" }
+      url: { type: "string" },
+      passthrough: { type: "boolean" }
     }
   },
   handler: async (request, reply) => {
@@ -52666,9 +52667,8 @@ app.route({
     queue.add(async () => {
       await reply;
     });
-    const { format, width, url } = request.query;
+    const { passthrough, format, width, url } = request.query;
     reply.type(`image/${format}`);
-    const isGif = new URL(url).pathname.endsWith(".gif");
     const { statusCode, body } = await (0, import_undici.request)(url, {
       headers: {
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
@@ -52679,6 +52679,9 @@ app.route({
       reply.status(statusCode);
       return `${statusCode}`;
     }
+    if (passthrough)
+      return body;
+    const isGif = new URL(url).pathname.endsWith(".gif");
     if (isGif)
       return body;
     const transformer = getTransformer(parseInt(width), format);

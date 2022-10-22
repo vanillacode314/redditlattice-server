@@ -34,6 +34,7 @@ app.route({
       width: { type: 'number' },
       format: { type: 'string' },
       url: { type: 'string' },
+      passthrough: { type: 'boolean' },
     },
   },
   handler: async (request, reply) => {
@@ -41,13 +42,13 @@ app.route({
     queue.add(async () => {
       await reply
     })
-    const { format, width, url } = request.query as {
+    const { passthrough, format, width, url } = request.query as {
       width: string
       format: ImageFormat
       url: string
+      passthrough: boolean
     }
     reply.type(`image/${format}`)
-    const isGif = new URL(url).pathname.endsWith('.gif')
     const { statusCode, body } = await client(url, {
       headers: {
         'User-Agent':
@@ -59,6 +60,8 @@ app.route({
       reply.status(statusCode)
       return `${statusCode}`
     }
+    if (passthrough) return body
+    const isGif = new URL(url).pathname.endsWith('.gif')
     if (isGif) return body
     const transformer = getTransformer(parseInt(width), format)
     return body.pipe(transformer)

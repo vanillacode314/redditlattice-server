@@ -4,7 +4,7 @@ import sharp, { AvailableFormatInfo, FormatEnum, Sharp } from 'sharp'
 import { request as client } from 'undici'
 import PQueue from 'p-queue'
 
-const queue = new PQueue({ concurrency: 2 })
+const queue = new PQueue({ concurrency: 3 })
 
 sharp.cache(false)
 sharp.concurrency(4)
@@ -12,16 +12,15 @@ sharp.concurrency(4)
 type ImageFormat = keyof FormatEnum | AvailableFormatInfo
 const PORT = +(process.env.PORT || 3000)
 
-function getTransformer(
-  width: number = 300,
-  format: ImageFormat = 'webp'
-): Sharp {
-  let transformer = sharp({ sequentialRead: true }).toFormat(format, {
-    lossless: true,
-  })
-  if (width > 0) {
+type Options = { width?: number; format?: ImageFormat }
+function getTransformer({ width = 300, format }: Options = {}): Sharp {
+  let transformer = sharp({ sequentialRead: true })
+  if (format)
+    transformer = transformer.toFormat(format, {
+      lossless: true,
+    })
+  if (width > 0)
     transformer = transformer.resize({ width, withoutEnlargement: true })
-  }
   return transformer
 }
 
@@ -60,10 +59,9 @@ app.route({
       reply.status(statusCode)
       return `${statusCode}`
     }
-    if (passthrough) return body
     const isGif = new URL(url).pathname.endsWith('.gif')
-    if (isGif) return body
-    const transformer = getTransformer(parseInt(width), format)
+    if (passthrough || isGif) return body
+    const transformer = getTransformer({ width: parseInt(width), format })
     return body.pipe(transformer)
   },
 })

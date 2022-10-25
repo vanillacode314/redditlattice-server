@@ -52641,14 +52641,15 @@ var queue = new PQueue({ concurrency: 2 });
 import_sharp.default.cache(false);
 import_sharp.default.concurrency(4);
 var PORT = +(process.env.PORT || 3e3);
-function getTransformer(width = 300, format = "webp") {
-  let transformer = (0, import_sharp.default)({ sequentialRead: true }).toFormat(format, {
-    lossless: true
-  });
-  if (width > 0) {
+async function transformImage(body, { width = 300, format } = {}) {
+  let transformer = (0, import_sharp.default)({ sequentialRead: true });
+  if (format)
+    transformer = transformer.toFormat(format, {
+      lossless: true
+    });
+  if (width > 0)
     transformer = transformer.resize({ width, withoutEnlargement: true });
-  }
-  return transformer;
+  return await body.pipe(transformer).toBuffer({ resolveWithObject: true });
 }
 var app = (0, import_fastify.default)({ logger: true });
 app.route({
@@ -52656,9 +52657,9 @@ app.route({
   url: "/",
   schema: {
     querystring: {
+      url: { type: "string" },
       width: { type: "number" },
       format: { type: "string" },
-      url: { type: "string" },
       passthrough: { type: "boolean" }
     }
   },
@@ -52667,9 +52668,9 @@ app.route({
     queue.add(async () => {
       await reply;
     });
-    const { passthrough, format, width, url } = request.query;
+    const { url, passthrough, format, width } = request.query;
     reply.type(`image/${format}`);
-    const { statusCode, body } = await (0, import_undici.request)(url, {
+    const { statusCode, body, headers } = await (0, import_undici.request)(url, {
       headers: {
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
       },
@@ -52679,13 +52680,17 @@ app.route({
       reply.status(statusCode);
       return `${statusCode}`;
     }
-    if (passthrough)
-      return body;
     const isGif = new URL(url).pathname.endsWith(".gif");
-    if (isGif)
+    if (passthrough || isGif) {
+      reply.header("Content-Length", headers["content-length"]);
       return body;
-    const transformer = getTransformer(parseInt(width), format);
-    return body.pipe(transformer);
+    }
+    const { data, info } = await transformImage(body, {
+      width: Math.floor(+width),
+      format
+    });
+    reply.header("Content-Length", info.size);
+    return data;
   }
 });
 (async () => {

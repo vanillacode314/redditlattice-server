@@ -52668,6 +52668,7 @@ app.route({
     queue.add(async () => {
       await reply;
     });
+    reply.header("cache-control", "no-store");
     const { url, passthrough, format, width } = request.query;
     reply.type(`image/${format}`);
     const { statusCode, body, headers } = await (0, import_undici.request)(url, {

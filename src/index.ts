@@ -6,7 +6,6 @@ import PQueue from 'p-queue'
 import { Readable } from 'stream'
 
 const queue = new PQueue({ concurrency: 2 })
-
 sharp.cache(false)
 sharp.concurrency(4)
 

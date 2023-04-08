@@ -4,6 +4,7 @@ specifiers:
   '@fastify/cors': ^8.2.1
   '@types/node': ^18.15.11
   '@types/sharp': ^0.31.1
+  bun-types: ^0.5.8
   esbuild: ^0.17.15
   fastify: ^4.15.0
   got: ^12.6.0
@@ -15,7 +16,7 @@ specifiers:
   ts-node: ^10.9.1
   tslib: ^2.5.0
   typescript: ^5.0.4
-  undici: ^5.21.0
+  undici: ^5.21.1
 
 dependencies:
   '@fastify/cors': 8.2.1
@@ -24,11 +25,12 @@ dependencies:
   got-fetch: 5.1.4_got@12.6.0
   p-queue: 7.3.4
   sharp: 0.32.0
-  undici: 5.21.0
+  undici: 5.21.1
 
 devDependencies:
   '@types/node': 18.15.11
   '@types/sharp': 0.31.1
+  bun-types: 0.5.8
   esbuild: 0.17.15
   nodemon: 2.0.22
   prettier: 2.8.7
@@ -453,6 +455,10 @@ packages:
       base64-js: 1.5.1
       ieee754: 1.2.1
     dev: false
+
+  /bun-types/0.5.8:
+    resolution: {integrity: sha512-VHwD0MAHo3wraYAeqTWH2NDmXOdGfC3wWWOnZvK93ytI6yq/LkgsCjDudWNmN7MlfPvJb2zoLMnkzhjxNwLsLw==}
+    dev: true
 
   /busboy/1.6.0:
     resolution: {integrity: sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==}
@@ -1398,8 +1404,8 @@ packages:
     resolution: {integrity: sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==}
     dev: true
 
-  /undici/5.21.0:
-    resolution: {integrity: sha512-HOjK8l6a57b2ZGXOcUsI5NLfoTrfmbOl90ixJDl0AEFG4wgHNDQxtZy15/ZQp7HhjkpaGlp/eneMgtsu1dIlUA==}
+  /undici/5.21.1:
+    resolution: {integrity: sha512-JptL7wJkvuuZfevy0imEcM6P/Q40uI5msocbfrE6KguU6kz/pFk4L0A6//XbMIOq+FSIXxgDMAOgfeH+S/WFaA==}
     engines: {node: '>=12.18'}
     dependencies:
       busboy: 1.6.0

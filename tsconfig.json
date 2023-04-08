@@ -1,14 +1,21 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    // enable latest features
+    "lib": ["esnext"],
     "module": "esnext",
-    "outDir": "./",
-    "rootDir": "./src",
+    "target": "esnext",
+    
+    // requires typescript 5.x+
+    // use "nodenext" for earlier versions
+    "moduleResolution": "bundler",
+
+    // support JSX, CommonJS
+    "allowJs": true, // allow importing `.js` from `.ts`
+    "esModuleInterop": true, // allow default imports for CommonJS modules
+
+    // best practices
     "strict": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "skipLibCheck": true
-  },
-  "include": ["/**/*.ts"],
-  "exclude": ["./node_modules"]
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+  }
 }

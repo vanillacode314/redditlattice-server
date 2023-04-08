@@ -7,7 +7,7 @@ import { Readable } from 'stream'
 
 const queue = new PQueue({ concurrency: 2 })
 sharp.cache(false)
-sharp.concurrency(4)
+sharp.concurrency(2)
 
 type ImageFormat = keyof FormatEnum | AvailableFormatInfo
 const PORT = +(process.env.PORT || 3000)
